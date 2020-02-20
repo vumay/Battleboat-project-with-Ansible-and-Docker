@@ -1,0 +1,44 @@
+- name: Create docker network
+  docker_network:
+    name: battleboat
+
+- name: running the container
+  docker_container:
+    name: db-vumay
+    hostname: db-vumay
+    image: mysql:5.7 
+    state: started
+    restart_policy: "always"
+    env:
+      MYSQL_ROOT_PASSWORD: rootvumay
+      MYSQL_DATABASE: battleboat
+      MYSQL_USER: battleuser
+      MYSQL_PASSWORD: battlepass
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - name: battleboat
+    ports:
+      - "3306:3306"
+    restart_policy: "always"
+
+- name: running the container
+  docker_container:
+    name: fe-vumay
+    hostname: fe-vumay
+    image: vumay/fake-backend:1.0
+    state: started
+    volumes:
+      - /etc/volumes/battleboat-gh-pages:/etc/backend/static
+    restart_policy: "always"
+    env:
+      DATABASE_HOST: db-vumay
+      DATABASE_PORT: "3306"
+      DATABASE_USER: battleuser
+      DATABASE_PASSWORD: battlepass
+      DATABASE_NAME: battleboat
+    ports:
+      - "8181:3000"
+    networks:
+      - name: battleboat
+
