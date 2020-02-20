@@ -1,0 +1,45 @@
+---
+
+- hosts: server
+  become: true
+  vars_files:
+    - "secrets/docker_hub.yml"
+
+  pre_tasks:
+    - name: Log into DockerHub
+      docker_login:
+        username: "{{ docker_hub_login }}"
+        email: "{{ docker_hub_email }}"
+        password: "{{ docker_hub_password }}"
+  tasks:
+    - name: Git clone project fack-backend
+      git:
+        repo: 'https://github.com/alexandrevilain/fake-backend.git'
+        dest: /fake-backend
+        force: yes
+        recursive: no
+
+    - name: Git clone project battleboat
+      git:
+        repo: 'https://github.com/billmei/battleboat.git'
+        dest: /etc/volumes/battleboat-gh-pages
+        force: yes
+        recursive: no
+
+    - name: Build fake-backend image and push on personal DockerHub
+      docker_image:
+        path: /etc/volumes/fake-backend/
+        name: vumay/fake-backend
+        push: no
+        tag: "1.0"
+
+    - name: Create a volume db-data
+      docker_volume:
+        name: db-data
+
+    - name: Create volumes folders for bind option
+      file:
+        path: /etc/volumes/ {{ item }}
+        state: directory
+      with_items:
+        - battleboat-gh-pages

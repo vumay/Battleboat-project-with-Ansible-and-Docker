@@ -1,0 +1,59 @@
+---
+- name: Ansible check directory.
+  stat:
+    path: /tmp
+  register: folder_tmp
+
+# vérifie si le dossier /tmp est existant, si oui un msg apparaît
+- name: "echo if directory already existed"
+  debug:
+    msg: "the tmp directory is already existed"
+  when: folder_tmp.stat.exists
+
+# création du dossier si réponse négative apres le check
+- name: "Ansible Create directory tmp if not exists"
+  file:
+    path: /tmp
+    state: directory
+    mode: 0755
+    group: root
+    owner: root
+  when: folder_tmp.stat.exists == false
+
+
+- name: Ansible check file .
+  stat:
+    path: /tmp/get-docker.sh
+  register: script
+
+# verifie si docker est installé
+- name: "echo if file already existed"
+  debug:
+    msg: "the scipt-docker is already existed"
+  when: script.stat.exists
+
+- name: Install Docker with official script if script is not present
+  command: chdir=/tmp/ {{ item }}
+  with_items:
+    - curl -fsSL https://get.docker.com -o get-docker.sh
+    - sh get-docker.sh
+  when: script.stat.exists == false
+
+- name: Add the user centos into the 'docker' group
+  user:
+    name: root
+    group: docker
+  when: (ansible_facts['distribution'] == "CentOS" and script.stat.exists == false )
+
+- name: Add the user admin into the 'docker' group
+  user:
+    name: admin
+    group: docker
+  when: (ansible_facts['distribution'] == "Debian" and script.stat.exists == false )
+
+- name: Run command if /path/to/database does not exist (without 'args' keyword).
+  command: systemctl start docker
+
+- name: build docker images
+  include: "Docker_build"
+  

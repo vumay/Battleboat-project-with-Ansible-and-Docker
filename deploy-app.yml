@@ -1,0 +1,48 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Create docker network
+      docker_network:
+        name: battleboat
+
+    - name: running the container
+      docker_container:
+        image: mysql:5.7
+        name: db_vumay
+        state: started
+        restart_policy: "always"
+        env:
+          MYSQL_ROOT_PASSWORD: rootvumay
+          MYSQL_DATABASE: battleboat
+          MYSQL_USER: battleuser
+          MYSQL_PASSWORD: battlepass
+        volumes:
+         - db-data:/var/lib/mysql
+        networks:
+          - name: battleboat
+        port:
+          - "3306"
+        restart_policy: "always"
+
+    - name: running the container
+      docker_container:
+        image: fe-vumay
+        name: fe-vumay
+        state: started
+        volumes:
+          - /etc/volumes/battleboat-gh-pages:/etc/backend/static
+        restart_policy: "always"
+        env:
+          DATABASE_HOST: battleboat
+          DATABASE_PORT: "3306"
+          DATABASE_USER: battleuser
+          DATABASE_PASSWORD: battlepass
+          DATABASE_NAME: battleboat
+        ports:
+          - "8181:3000"
+        networks:
+          - name: battleboat
+
+    - name: Check if container is running
+      shell: docker ps

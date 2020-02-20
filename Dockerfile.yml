@@ -1,0 +1,19 @@
+FROM apache:latest
+
+#Maintainer of image
+LABEL maintainer="vuthymay38@gmail.com"
+
+#Install of dependencies
+RUN apt-get update -y && apt-get install git -y 
+
+RUN git clone https://github.com/billmei/battleboat.git
+
+#COPY SOURCE CODE IN THE IMAGE
+
+COPY ./battleboat /var/www/html
+
+#EXPOSE PORT
+EXPOSE 8181
+
+#RUN CODE
+CMD ["apachectl", "-D", "FOREGROUND"]
