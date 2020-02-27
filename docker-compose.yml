@@ -1,4 +1,6 @@
-version: "3.7" services:
+version: "3.7"
+
+services:
  # db
   db-vumay:
     hostname: "db-vumay"
@@ -19,7 +21,7 @@ version: "3.7" services:
   # fake-backend
   battle-vumay:
     hostname: "battle-vumay"
-    image: "vumay/fake-backend"
+    image: "vumay/fake-backend:1.0"
     container_name: "fe-vumay"
     volumes:
       - ./battleboat/:/etc/backend/static
@@ -35,7 +37,9 @@ version: "3.7" services:
       - "battleboat"
     restart: always
     depends_on:
-      - "db-vumay" networks:
+      - "db-vumay"
+
+networks:
   battleboat:
     name: "battleboat"
     
