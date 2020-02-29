@@ -24,9 +24,7 @@ services:
     image: "vumay/fake-backend:1.0"
     container_name: "fe-vumay"
     volumes:
-      - type: bind
-        source: ./battleboat/
-        target: /etc/backend/static
+      - ./battleboat/:/etc/backend/static 
     environment:
       DATABASE_HOST: "db-vumay"
       DATABASE_PORT: "3306"
