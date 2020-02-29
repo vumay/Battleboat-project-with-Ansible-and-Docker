@@ -1,4 +1,3 @@
-[![Build Status](http://ec2-34-229-58-92.compute-1.amazonaws.com/buildStatus/icon?job=battleboat-jenkins-ci)](http://ec2-34-229-58-92.compute-1.amazonaws.com/job/battleboat-jenkins-ci/)
-
+[![Build Status](http://34.224.18.240/buildStatus/icon?job=battleboat-jenkins-ci)](http://34.224.18.240/job/battleboat-jenkins-ci/)
 
 # ansible-deploy-batttleboat  
